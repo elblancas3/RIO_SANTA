@@ -10,236 +10,187 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
 <style>
 :root {
-  --verde: #1D9E75;
-  --verde-oscuro: #085041;
-  --agua: #185FA5;
-  --arena: #f5f0e8;
-  --text: #1a1a1a;
-  --text-muted: #666;
-  --panel-bg: rgba(255,255,255,0.97);
-  --border: #e0dbd0;
-  --danger: #D85A30;
-  --warn: #BA7517;
-  --info: #378ADD;
+  --verde:#1D9E75; --verde-oscuro:#085041; --agua:#185FA5;
+  --text:#1a1a1a; --text-muted:#666;
+  --panel-bg:rgba(255,255,255,0.97); --border:#e0dbd0;
+  --danger:#D85A30; --warn:#BA7517;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: #0e1a0e; color: var(--text); }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Segoe UI',system-ui,sans-serif;background:#071a10;color:var(--text)}
 
-/* HEADER */
-#header {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  background: var(--verde-oscuro);
-  padding: 0 16px;
-  height: 52px;
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 2px solid var(--verde);
+#header{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(7,26,16,0.93);backdrop-filter:blur(10px);
+  padding:0 16px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1.5px solid var(--verde);
 }
-#header-left { display: flex; align-items: center; gap: 12px; }
-#logo { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
-#logo span { color: var(--verde); }
-#tagline { font-size: 11px; color: rgba(255,255,255,0.55); display: none; }
-#header-stats { display: flex; gap: 16px; }
-.hstat { text-align: right; }
-.hstat-val { font-size: 15px; font-weight: 700; color: #fff; }
-.hstat-lab { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; }
+#logo{font-size:19px;font-weight:700;color:#fff;letter-spacing:-0.02em}
+#logo span{color:var(--verde)}
+#logo small{font-size:11px;font-weight:400;color:rgba(255,255,255,0.38);margin-left:8px}
+#header-stats{display:flex;gap:20px}
+.hstat{text-align:right}
+.hstat-val{font-size:15px;font-weight:700;color:#fff}
+.hstat-lab{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.05em}
 
-/* MAP */
-#map { position: fixed; top: 52px; left: 0; right: 0; bottom: 0; z-index: 1; }
+#map{position:fixed;top:52px;left:0;right:0;bottom:0;z-index:1}
 
-/* PANEL IZQUIERDO */
-#panel {
-  position: fixed; top: 52px; left: 0; bottom: 0; width: 300px; z-index: 100;
-  background: var(--panel-bg); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; overflow: hidden;
-  transition: transform 0.3s ease;
+#panel{
+  position:fixed;top:52px;left:0;bottom:0;width:300px;z-index:100;
+  background:var(--panel-bg);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
 }
-#panel.collapsed { transform: translateX(-300px); }
+#panel.collapsed{transform:translateX(-300px)}
 
-#panel-toggle {
-  position: fixed; top: 60px; left: 300px; z-index: 101;
-  background: var(--verde-oscuro); color: #fff;
-  border: none; border-radius: 0 6px 6px 0;
-  padding: 8px 6px; cursor: pointer; font-size: 14px;
-  transition: left 0.3s ease;
-  writing-mode: vertical-rl;
-  letter-spacing: 0.05em; font-size: 10px;
-  text-transform: uppercase;
+#panel-toggle{
+  position:fixed;top:64px;left:300px;z-index:101;
+  background:rgba(7,26,16,0.88);color:#fff;
+  border:1px solid rgba(29,158,117,0.4);border-left:none;
+  border-radius:0 8px 8px 0;padding:10px 7px;cursor:pointer;
+  font-size:10px;text-transform:uppercase;letter-spacing:.05em;
+  writing-mode:vertical-rl;transition:left .28s cubic-bezier(.4,0,.2,1);
 }
-#panel.collapsed ~ #panel-toggle { left: 0; }
+#panel.collapsed~#panel-toggle{left:0}
 
-#panel-tabs {
-  display: flex; border-bottom: 1px solid var(--border);
-  background: #f9f7f3;
+#panel-tabs{display:flex;border-bottom:1px solid var(--border);background:#f9f7f3}
+.ptab{
+  flex:1;padding:10px 6px;font-size:11px;font-weight:600;
+  border:none;background:none;cursor:pointer;color:var(--text-muted);
+  border-bottom:2px solid transparent;transition:all .15s;
+  text-transform:uppercase;letter-spacing:.05em;
 }
-.ptab {
-  flex: 1; padding: 10px 8px; font-size: 12px; font-weight: 600;
-  border: none; background: none; cursor: pointer;
-  color: var(--text-muted); border-bottom: 2px solid transparent;
-  transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.04em;
-}
-.ptab.active { color: var(--verde-oscuro); border-bottom-color: var(--verde); background: #fff; }
+.ptab.active{color:var(--verde-oscuro);border-bottom-color:var(--verde);background:#fff}
 
-.tab-content { display: none; flex: 1; overflow-y: auto; padding: 14px; }
-.tab-content.active { display: flex; flex-direction: column; gap: 12px; }
+.tab-content{display:none;flex:1;overflow-y:auto;padding:14px}
+.tab-content.active{display:flex;flex-direction:column;gap:12px}
 
-/* FILTROS */
-.filter-group { display: flex; flex-direction: column; gap: 6px; }
-.filter-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
-.filter-chips { display: flex; flex-wrap: wrap; gap: 5px; }
-.chip {
-  padding: 4px 10px; border-radius: 20px; font-size: 11px; cursor: pointer;
-  border: 1.5px solid var(--border); background: #fff; color: var(--text);
-  transition: all 0.15s; font-weight: 500;
+.filter-group{display:flex;flex-direction:column;gap:6px}
+.filter-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted)}
+.filter-chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{
+  padding:4px 10px;border-radius:20px;font-size:11px;cursor:pointer;
+  border:1.5px solid var(--border);background:#fff;color:var(--text);
+  transition:all .15s;font-weight:500;user-select:none;
 }
-.chip.active { color: #fff; border-color: transparent; }
-.chip-verde.active { background: var(--verde); }
-.chip-agua.active { background: var(--agua); }
-.chip-warn.active { background: var(--warn); }
-.chip-danger.active { background: var(--danger); }
-.chip-gray.active { background: #666; }
 
-/* LEYENDA RSC */
-.leyenda-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 8px; border-radius: 6px; cursor: pointer;
-  transition: background 0.12s; font-size: 12px;
+.leyenda-group-title{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;color:#999;margin:10px 0 4px;padding:0 4px;
 }
-.leyenda-item:hover { background: #f5f0e8; }
-.leyenda-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
-.leyenda-name { flex: 1; }
-.leyenda-ha { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+.leyenda-item{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 8px;border-radius:6px;cursor:pointer;
+  transition:background .12s;font-size:12px;
+}
+.leyenda-item:hover{background:#f5f0e8}
+.leyenda-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;border:1px solid rgba(0,0,0,0.12)}
+.leyenda-name{flex:1}
+.leyenda-ha{font-size:11px;color:var(--text-muted);font-weight:600}
 
-/* BÚSQUEDA */
-#search-input {
-  width: 100%; padding: 9px 12px; border: 1.5px solid var(--border);
-  border-radius: 8px; font-size: 13px; outline: none;
-  transition: border-color 0.15s;
+#search-input{
+  width:100%;padding:9px 12px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:13px;outline:none;transition:border-color .15s;
 }
-#search-input:focus { border-color: var(--verde); }
-#search-results { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto; }
-.search-item {
-  padding: 8px 10px; border-radius: 6px; cursor: pointer; border: 1px solid transparent;
-  transition: all 0.12s; font-size: 12px;
+#search-input:focus{border-color:var(--verde)}
+#search-results{display:flex;flex-direction:column;gap:3px}
+.search-item{
+  padding:8px 10px;border-radius:6px;cursor:pointer;
+  border:1px solid transparent;transition:all .12s;font-size:12px;
 }
-.search-item:hover { background: #f5f0e8; border-color: var(--border); }
-.search-sci { font-style: italic; color: var(--text-muted); font-size: 11px; margin-top: 1px; }
-.search-meta { display: flex; gap: 6px; margin-top: 3px; }
-.stag {
-  font-size: 10px; padding: 1px 6px; border-radius: 10px;
-  background: #f0ece4; color: #555; font-weight: 500;
-}
-.stag.amenazada { background: #FCEBEB; color: #A32D2D; }
+.search-item:hover{background:#f5f0e8;border-color:var(--border)}
+.search-sci{font-style:italic;color:var(--text-muted);font-size:11px;margin-top:1px}
+.search-meta{display:flex;gap:5px;margin-top:3px;flex-wrap:wrap}
+.stag{font-size:10px;padding:1px 6px;border-radius:10px;background:#f0ece4;color:#555;font-weight:500}
+.stag.am{background:#FCEBEB;color:#A32D2D}
 
-/* FICHA ESPECIE */
-#ficha {
-  position: fixed; bottom: 16px; right: 16px; width: 280px; z-index: 200;
-  background: #fff; border-radius: 12px; border: 1px solid var(--border);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12); padding: 16px;
-  transform: translateY(120%); transition: transform 0.25s ease;
+#ficha{
+  position:fixed;bottom:16px;right:16px;width:284px;z-index:200;
+  background:#fff;border-radius:14px;border:1px solid var(--border);
+  box-shadow:0 6px 32px rgba(0,0,0,0.18);padding:16px 16px 14px;
+  transform:translateY(140%);transition:transform .26s cubic-bezier(.4,0,.2,1);
 }
-#ficha.visible { transform: translateY(0); }
-#ficha-close {
-  position: absolute; top: 10px; right: 10px;
-  background: none; border: none; font-size: 18px; cursor: pointer; color: #999;
-  line-height: 1;
+#ficha.visible{transform:translateY(0)}
+#ficha-close{
+  position:absolute;top:10px;right:12px;background:none;border:none;
+  font-size:20px;cursor:pointer;color:#bbb;line-height:1;
 }
-#ficha-grupo { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 4px; }
-#ficha-nombre { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-#ficha-sci { font-style: italic; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
-#ficha-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-.ftag {
-  font-size: 10px; padding: 2px 8px; border-radius: 10px;
-  background: #f0ece4; color: #555;
+#ficha-close:hover{color:#666}
+#ficha-grupo{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:3px}
+#ficha-nombre{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.3}
+#ficha-sci{font-style:italic;font-size:12px;color:var(--text-muted);margin-bottom:10px}
+#ficha-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.ftag{font-size:10px;padding:2px 8px;border-radius:10px;background:#f0ece4;color:#555}
+.ftag.am{background:#FCEBEB;color:#A32D2D;font-weight:700}
+#ficha-link{
+  display:block;text-align:center;padding:9px;
+  background:var(--verde-oscuro);color:#fff;border-radius:8px;
+  text-decoration:none;font-size:12px;font-weight:600;transition:background .15s;
 }
-.ftag.amenazada-tag { background: #FCEBEB; color: #A32D2D; font-weight: 700; }
-#ficha-link {
-  display: block; text-align: center; padding: 8px;
-  background: var(--verde-oscuro); color: #fff; border-radius: 8px;
-  text-decoration: none; font-size: 12px; font-weight: 600;
-  transition: background 0.15s;
-}
-#ficha-link:hover { background: var(--verde); }
+#ficha-link:hover{background:var(--verde)}
 
-/* FICHA RSC */
-#ficha-rsc {
-  position: fixed; bottom: 16px; left: 316px; width: 260px; z-index: 200;
-  background: #fff; border-radius: 12px; border: 1px solid var(--border);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12); padding: 16px;
-  transform: translateY(120%); transition: transform 0.25s ease;
+#ficha-rsc{
+  position:fixed;bottom:16px;left:316px;width:260px;z-index:200;
+  background:#fff;border-radius:14px;border:1px solid var(--border);
+  box-shadow:0 6px 32px rgba(0,0,0,0.18);padding:16px;
+  transform:translateY(140%);transition:transform .26s cubic-bezier(.4,0,.2,1);
 }
-#ficha-rsc.visible { transform: translateY(0); }
-#ficha-rsc-close {
-  position: absolute; top: 10px; right: 10px;
-  background: none; border: none; font-size: 18px; cursor: pointer; color: #999;
+#ficha-rsc.visible{transform:translateY(0)}
+#ficha-rsc-close{
+  position:absolute;top:10px;right:12px;background:none;border:none;
+  font-size:20px;cursor:pointer;color:#bbb;
 }
-#ficha-rsc-titulo { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-#ficha-rsc-grupo { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px; }
-#ficha-rsc-ha { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-#ficha-rsc-int { font-size: 11px; color: #444; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 8px; }
-#ficha-rsc-int-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 4px; }
+#ficha-rsc-swatch{width:100%;height:4px;border-radius:2px;margin-bottom:10px}
+#ficha-rsc-grupo{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:3px}
+#ficha-rsc-titulo{font-size:15px;font-weight:700;margin-bottom:4px}
+#ficha-rsc-ha{font-size:26px;font-weight:700;margin-bottom:10px}
+#ficha-rsc-int-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:4px}
+#ficha-rsc-int{font-size:11px;color:#444;line-height:1.65;border-top:1px solid var(--border);padding-top:8px}
 
-/* LOADING */
-#loading {
-  position: fixed; inset: 0; z-index: 9999;
-  background: var(--verde-oscuro);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+/* Loading */
+#loading{
+  position:fixed;inset:0;z-index:9999;background:#071a10;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
 }
-#loading h1 { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
-#loading h1 span { color: var(--verde); }
-#loading p { color: rgba(255,255,255,0.6); font-size: 14px; }
-#progress-bar { width: 200px; height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; overflow: hidden; }
-#progress-fill { height: 100%; background: var(--verde); width: 0; transition: width 0.3s; border-radius: 2px; }
-#loading.hidden { opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+#loading-logo{font-size:34px;font-weight:800;color:#fff;letter-spacing:-.03em}
+#loading-logo span{color:var(--verde)}
+#loading-sub{font-size:12px;color:rgba(255,255,255,0.35);letter-spacing:.05em;text-transform:uppercase}
+#loading-msg{color:rgba(255,255,255,0.5);font-size:13px;min-height:20px;text-align:center}
+#progress-wrap{width:200px}
+#progress-bar{width:100%;height:2px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;margin-bottom:6px}
+#progress-fill{height:100%;background:var(--verde);width:0;transition:width .35s ease;border-radius:2px}
+#progress-label{font-size:11px;color:rgba(255,255,255,0.3);text-align:right}
+#loading.out{opacity:0;pointer-events:none;transition:opacity .5s}
 
-/* COUNTER AMENAZADAS */
-#amenazadas-badge {
-  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-  background: #A32D2D; color: #fff; z-index: 150;
-  padding: 8px 18px; border-radius: 30px; font-size: 12px; font-weight: 700;
-  display: none; gap: 8px; align-items: center;
-  box-shadow: 0 2px 12px rgba(163,45,45,0.4);
-}
-#amenazadas-badge.visible { display: flex; }
-
-@media (max-width: 640px) {
-  #panel { width: 260px; }
-  #panel-toggle { left: 260px; }
-  #ficha { width: calc(100vw - 32px); left: 16px; right: 16px; bottom: 60px; }
-  #ficha-rsc { display: none; }
-  #header-stats { display: none; }
+@media(max-width:640px){
+  #panel{width:270px}
+  #panel.collapsed~#panel-toggle{left:0}
+  #panel-toggle{left:270px}
+  #ficha{width:calc(100vw - 32px);left:16px;right:16px;bottom:56px}
+  #ficha-rsc{display:none}
+  #header-stats .hstat:nth-child(n+3){display:none}
 }
 </style>
 </head>
 <body>
 
 <div id="loading">
-  <h1>Río <span>Vivo</span></h1>
-  <p id="loading-msg">Cargando atlas territorial…</p>
-  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <div id="loading-logo">Río <span>Vivo</span></div>
+  <div id="loading-sub">Atlas de Biodiversidad y Territorio · ZMM</div>
+  <div id="loading-msg">Iniciando…</div>
+  <div id="progress-wrap">
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+    <div id="progress-label">0%</div>
+  </div>
 </div>
 
 <div id="header">
-  <div id="header-left">
-    <div id="logo">Río <span>Vivo</span></div>
-    <div id="tagline">Atlas de Biodiversidad y Territorio · ZMM</div>
-  </div>
+  <div id="logo">Río <span>Vivo</span><small>Atlas ZMM</small></div>
   <div id="header-stats">
-    <div class="hstat">
-      <div class="hstat-val" id="stat-obs">3,851</div>
-      <div class="hstat-lab">observaciones</div>
-    </div>
-    <div class="hstat">
-      <div class="hstat-val" id="stat-spp">703</div>
-      <div class="hstat-lab">especies</div>
-    </div>
-    <div class="hstat">
-      <div class="hstat-val" id="stat-am" style="color:#F09595">102</div>
-      <div class="hstat-lab">amenazadas</div>
-    </div>
-    <div class="hstat">
-      <div class="hstat-val">660 ha</div>
-      <div class="hstat-lab">corredor</div>
-    </div>
+    <div class="hstat"><div class="hstat-val" id="stat-obs">3,851</div><div class="hstat-lab">Observaciones</div></div>
+    <div class="hstat"><div class="hstat-val" id="stat-spp">703</div><div class="hstat-lab">Especies</div></div>
+    <div class="hstat"><div class="hstat-val" style="color:#F09595" id="stat-am">102</div><div class="hstat-lab">Amenazadas</div></div>
+    <div class="hstat"><div class="hstat-val">660 ha</div><div class="hstat-lab">Corredor</div></div>
   </div>
 </div>
 
@@ -248,75 +199,66 @@ html, body { height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; backg
 <div id="panel">
   <div id="panel-tabs">
     <button class="ptab active" onclick="switchTab('capas')">Capas</button>
-    <button class="ptab" onclick="switchTab('leyenda')">Cobertura</button>
+    <button class="ptab" onclick="switchTab('leyenda')">Leyenda</button>
     <button class="ptab" onclick="switchTab('buscar')">Buscar</button>
   </div>
 
-  <!-- TAB CAPAS -->
   <div id="tab-capas" class="tab-content active">
     <div class="filter-group">
-      <div class="filter-label">Capas del mapa</div>
+      <div class="filter-label">Capas visibles</div>
       <div class="filter-chips">
-        <div class="chip chip-verde active" id="toggle-rsc" onclick="toggleLayer('rsc')">Cobertura de suelo</div>
-        <div class="chip chip-agua active" id="toggle-biod" onclick="toggleLayer('biod')">Biodiversidad</div>
+        <div class="chip" id="btn-rsc" style="background:#1D9E75;color:#fff;border-color:#1D9E75" onclick="toggleLayer('rsc')">Cobertura de suelo</div>
+        <div class="chip" id="btn-biod" style="background:#185FA5;color:#fff;border-color:#185FA5" onclick="toggleLayer('biod')">Biodiversidad</div>
       </div>
     </div>
-
-    <div class="filter-group" id="grupo-filters">
+    <div class="filter-group">
       <div class="filter-label">Grupo taxonómico</div>
       <div class="filter-chips" id="grupo-chips"></div>
     </div>
-
     <div class="filter-group">
       <div class="filter-label">Segmento de cuenca</div>
       <div class="filter-chips">
-        <div class="chip chip-verde active" data-seg="all" onclick="filterSeg(this)">Todos</div>
-        <div class="chip chip-verde" data-seg="Cuenca alta" onclick="filterSeg(this)">Alta</div>
-        <div class="chip chip-verde" data-seg="Cuenca media" onclick="filterSeg(this)">Media</div>
-        <div class="chip chip-verde" data-seg="Cuenca baja" onclick="filterSeg(this)">Baja</div>
+        <div class="chip" style="background:#1D9E75;color:#fff;border-color:#1D9E75" data-seg="all" onclick="filterSeg(this)">Todos</div>
+        <div class="chip" data-seg="Cuenca alta" onclick="filterSeg(this)">Alta</div>
+        <div class="chip" data-seg="Cuenca media" onclick="filterSeg(this)">Media</div>
+        <div class="chip" data-seg="Cuenca baja" onclick="filterSeg(this)">Baja</div>
       </div>
     </div>
-
     <div class="filter-group">
       <div class="filter-label">Municipio</div>
       <div class="filter-chips">
-        <div class="chip chip-gray active" data-mun="all" onclick="filterMun(this)">Todos</div>
-        <div class="chip chip-gray" data-mun="Monterrey" onclick="filterMun(this)">Monterrey</div>
-        <div class="chip chip-gray" data-mun="Guadalupe" onclick="filterMun(this)">Guadalupe</div>
-        <div class="chip chip-gray" data-mun="Santa Catarina" onclick="filterMun(this)">Sta. Catarina</div>
-        <div class="chip chip-gray" data-mun="San Pedro Garza Garc" onclick="filterMun(this)">San Pedro</div>
+        <div class="chip" style="background:#555;color:#fff;border-color:#555" data-mun="all" onclick="filterMun(this)">Todos</div>
+        <div class="chip" data-mun="Monterrey" onclick="filterMun(this)">Monterrey</div>
+        <div class="chip" data-mun="Guadalupe" onclick="filterMun(this)">Guadalupe</div>
+        <div class="chip" data-mun="Santa Catarina" onclick="filterMun(this)">Sta. Catarina</div>
+        <div class="chip" data-mun="San Pedro Garza Garc" onclick="filterMun(this)">San Pedro</div>
       </div>
     </div>
-
     <div class="filter-group">
-      <div class="filter-label">Estado de conservación</div>
+      <div class="filter-label">Conservación</div>
       <div class="filter-chips">
-        <div class="chip chip-danger active" id="toggle-amenazadas" onclick="toggleAmenazadas()">Solo amenazadas</div>
+        <div class="chip" id="btn-am" onclick="toggleAmenazadas()">⚠ Solo amenazadas</div>
       </div>
     </div>
-
-    <div style="font-size:11px; color:var(--text-muted); line-height:1.6; padding:8px; background:#f9f7f3; border-radius:8px;">
-      Datos de biodiversidad tomados de <strong>iNaturalist</strong>. Cobertura de suelo: <strong>RSC · Río Vivo 2024</strong>. Haz clic en cualquier punto o polígono para más información.
+    <div style="font-size:11px;color:var(--text-muted);line-height:1.65;padding:10px 12px;background:#f9f7f3;border-radius:8px;border:1px solid var(--border)">
+      Biodiversidad: <strong>iNaturalist</strong> · Cobertura: <strong>RSC Río Vivo 2024</strong><br>
+      Haz clic en puntos o polígonos para ver el detalle.
     </div>
   </div>
 
-  <!-- TAB LEYENDA -->
   <div id="tab-leyenda" class="tab-content">
-    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-bottom:4px;">Cobertura del corredor</div>
     <div id="leyenda-list"></div>
   </div>
 
-  <!-- TAB BUSCAR -->
   <div id="tab-buscar" class="tab-content">
     <input type="text" id="search-input" placeholder="Nombre común o científico…" oninput="doSearch(this.value)">
     <div id="search-results"></div>
-    <div id="search-empty" style="font-size:12px;color:var(--text-muted);display:none">No se encontraron coincidencias.</div>
+    <div id="search-empty" style="font-size:12px;color:var(--text-muted);display:none;padding:8px">Sin resultados.</div>
   </div>
 </div>
 
 <button id="panel-toggle" onclick="togglePanel()">▶ Panel</button>
 
-<!-- Ficha biodiversidad -->
 <div id="ficha">
   <button id="ficha-close" onclick="closeFicha()">×</button>
   <div id="ficha-grupo"></div>
@@ -326,9 +268,9 @@ html, body { height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; backg
   <a id="ficha-link" href="#" target="_blank" rel="noopener">Ver en iNaturalist ↗</a>
 </div>
 
-<!-- Ficha cobertura RSC -->
 <div id="ficha-rsc">
   <button id="ficha-rsc-close" onclick="closeFichaRsc()">×</button>
+  <div id="ficha-rsc-swatch"></div>
   <div id="ficha-rsc-grupo"></div>
   <div id="ficha-rsc-titulo"></div>
   <div id="ficha-rsc-ha"></div>
@@ -339,105 +281,120 @@ html, body { height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; backg
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
-// ── STATE ──────────────────────────────────────────────
-let MAP, RSC_LAYER, BIOD_CLUSTER;
-let ALL_MARKERS = [];
-let activeGrupos = new Set(['Plantas','Aves','Artrópodos','Mamíferos','Reptiles','Anfbios','Peces','Hongos y líquenes','Microorganismos','Invertebrados no artrópodos']);
-let activeSeg = 'all';
-let activeMun = 'all';
-let onlyAmenazadas = false;
-let showRsc = true, showBiod = true;
-let panelOpen = true;
-
-const GRUPO_COLORS = {
+const GRUPO_COLORS={
   'Plantas':'#1D9E75','Aves':'#378ADD','Artrópodos':'#BA7517','Mamíferos':'#D85A30',
-  'Reptiles':'#639922','Anfbios':'#5DCAA5','Peces':'#185FA5','Hongos y líquenes':'#7F77DD',
-  'Microorganismos':'#888780','Invertebrados no artrópodos':'#EF9F27'
+  'Reptiles':'#639922','Anfbios':'#5DCAA5','Peces':'#185FA5',
+  'Hongos y líquenes':'#7F77DD','Microorganismos':'#aaa','Invertebrados no artrópodos':'#EF9F27'
 };
-const GRUPO_EMOJI = {
+const GRUPO_EMOJI={
   'Plantas':'🌿','Aves':'🐦','Artrópodos':'🦋','Mamíferos':'🦊','Reptiles':'🦎',
   'Anfbios':'🐸','Peces':'🐟','Hongos y líquenes':'🍄','Microorganismos':'🔬','Invertebrados no artrópodos':'🐛'
 };
+const GRUPO_NOMBRES_RSC={
+  presion:'Presión antrópica',suelo:'Tipo de suelo',
+  conservar:'Comunidades a conservar',manejar:'Comunidades a manejar',investigar:'Comunidades a investigar'
+};
 
-function setProgress(pct, msg) {
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('loading-msg').textContent = msg;
+let MAP,RSC_LAYER,BIOD_CLUSTER;
+let ALL_MARKERS=[];
+let activeGrupos=new Set(Object.keys(GRUPO_COLORS));
+let activeSeg='all',activeMun='all',onlyAm=false;
+let showRsc=true,showBiod=true,panelOpen=true;
+
+function setProgress(p,msg){
+  document.getElementById('progress-fill').style.width=p+'%';
+  document.getElementById('progress-label').textContent=Math.round(p)+'%';
+  if(msg) document.getElementById('loading-msg').textContent=msg;
 }
 
-// ── INIT MAP ───────────────────────────────────────────
-function initMap() {
-  MAP = L.map('map', { zoomControl: false, attributionControl: false }).setView([25.66, -100.34], 13);
-  L.control.zoom({ position: 'topright' }).addTo(MAP);
-  L.control.attribution({ position: 'bottomright', prefix: false })
-    .addAttribution('© <a href="https://www.openstreetmap.org/copyright">OSM</a> · Río Vivo RSC 2024 · iNaturalist')
+// Fetch with progress tracking
+async function fetchWithProgress(url, onProgress) {
+  const res = await fetch(url);
+  const total = parseInt(res.headers.get('content-length') || '0');
+  const reader = res.body.getReader();
+  let received = 0;
+  const chunks = [];
+  while(true){
+    const {done, value} = await reader.read();
+    if(done) break;
+    chunks.push(value);
+    received += value.length;
+    if(total && onProgress) onProgress(received/total);
+  }
+  const all = new Uint8Array(received);
+  let pos = 0;
+  for(const chunk of chunks){ all.set(chunk, pos); pos += chunk.length; }
+  return new TextDecoder().decode(all);
+}
+
+function initMap(){
+  MAP=L.map('map',{zoomControl:false,attributionControl:false}).setView([25.665,-100.34],13);
+  L.control.zoom({position:'topright'}).addTo(MAP);
+  L.control.attribution({position:'bottomright',prefix:false})
+    .addAttribution('© Esri, Maxar · © OSM · Río Vivo RSC 2024 · iNaturalist')
     .addTo(MAP);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19, subdomains: 'abcd'
+  // Satellite
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+    maxZoom:19
+  }).addTo(MAP);
+
+  // Labels overlay
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',{
+    maxZoom:19,subdomains:'abcd',pane:'shadowPane',opacity:0.85
   }).addTo(MAP);
 }
 
-// ── LOAD RSC ───────────────────────────────────────────
-async function loadRSC() {
-  setProgress(20, 'Cargando cobertura de suelo…');
-  const res = await fetch('rsc_web.geojson');
-  const data = await res.json();
-  setProgress(50, 'Dibujando polígonos…');
+async function loadRSC(){
+  setProgress(5,'Descargando cobertura de suelo…');
+  const text = await fetchWithProgress('rsc_web.geojson', p => setProgress(5 + p*50, `Descargando cobertura… ${Math.round(p*100)}%`));
+  setProgress(55,'Dibujando polígonos…');
+  const data = JSON.parse(text);
 
-  RSC_LAYER = L.geoJSON(data, {
-    style: f => ({
-      fillColor: f.properties.color,
-      fillOpacity: 0.55,
-      color: '#fff',
-      weight: 0.5,
-      opacity: 0.4
+  RSC_LAYER=L.geoJSON(data,{
+    style:f=>({
+      fillColor:f.properties.color,fillOpacity:0.52,
+      color:'#fff',weight:0.5,opacity:0.45
     }),
-    onEachFeature: (f, layer) => {
-      layer.on('click', () => showFichaRsc(f.properties));
-      layer.on('mouseover', function() {
-        this.setStyle({ fillOpacity: 0.8, weight: 1.5, color: '#fff' });
-      });
-      layer.on('mouseout', function() {
-        this.setStyle({ fillOpacity: 0.55, weight: 0.5, color: '#fff', opacity: 0.4 });
-      });
+    onEachFeature:(f,layer)=>{
+      layer.on('click',e=>{L.DomEvent.stopPropagation(e);showFichaRsc(f.properties)});
+      layer.on('mouseover',function(){this.setStyle({fillOpacity:0.78,weight:1.5})});
+      layer.on('mouseout', function(){this.setStyle({fillOpacity:0.52,weight:0.5})});
     }
   }).addTo(MAP);
 
   buildLeyenda(data.features);
 }
 
-// ── LOAD BIOD ──────────────────────────────────────────
-async function loadBIOD() {
-  setProgress(60, 'Cargando observaciones de biodiversidad…');
-  const res = await fetch('biod_points.json');
-  const data = await res.json();
-  setProgress(80, 'Posicionando ' + data.points.length + ' registros…');
+async function loadBIOD(){
+  setProgress(60,'Descargando biodiversidad…');
+  const text = await fetchWithProgress('biod_points.json', p => setProgress(60 + p*25, `Descargando biodiversidad… ${Math.round(p*100)}%`));
+  setProgress(86,'Posicionando registros…');
+  const data=JSON.parse(text);
 
-  BIOD_CLUSTER = L.markerClusterGroup({
-    maxClusterRadius: 40,
-    iconCreateFunction: cluster => {
-      const n = cluster.getChildCount();
-      const sz = n > 500 ? 44 : n > 100 ? 36 : 28;
+  BIOD_CLUSTER=L.markerClusterGroup({
+    maxClusterRadius:38,
+    iconCreateFunction:cluster=>{
+      const n=cluster.getChildCount();
+      const sz=n>500?44:n>100?36:28;
       return L.divIcon({
-        html: `<div style="width:${sz}px;height:${sz}px;background:rgba(29,158,117,0.85);border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${sz>36?13:11}px;font-weight:700;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.3)">${n}</div>`,
-        className: '', iconSize: [sz, sz], iconAnchor: [sz/2, sz/2]
+        html:`<div style="width:${sz}px;height:${sz}px;background:rgba(29,158,117,0.88);border:2px solid rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:${sz>36?13:11}px;font-weight:700;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.35)">${n}</div>`,
+        className:'',iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]
       });
     }
   });
 
-  // [lat, lon, sci, nom, grupo, fam, seg, mun, amenazada, url, fecha]
-  data.points.forEach(pt => {
-    const [lat, lon, sci, nom, grupo, fam, seg, mun, amenazada, url, fecha] = pt;
-    const color = GRUPO_COLORS[grupo] || '#888';
-    const emoji = GRUPO_EMOJI[grupo] || '●';
-    const sz = amenazada ? 14 : 10;
-    const icon = L.divIcon({
-      html: `<div style="width:${sz}px;height:${sz}px;background:${amenazada?'#E24B4A':color};border:${amenazada?'2px solid #fff':'1.5px solid rgba(255,255,255,0.6)'};border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.4)"></div>`,
-      className: '', iconSize: [sz, sz], iconAnchor: [sz/2, sz/2]
+  data.points.forEach(pt=>{
+    const[lat,lon,sci,nom,grupo,fam,seg,mun,amenazada,url,fecha]=pt;
+    const color=GRUPO_COLORS[grupo]||'#888';
+    const sz=amenazada?13:9;
+    const icon=L.divIcon({
+      html:`<div style="width:${sz}px;height:${sz}px;background:${amenazada?'#E24B4A':color};border:${amenazada?'2px solid #fff':'1.5px solid rgba(255,255,255,0.7)'};border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.5)"></div>`,
+      className:'',iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]
     });
-    const marker = L.marker([lat, lon], { icon });
-    marker.data = { lat, lon, sci, nom, grupo, fam, seg, mun, amenazada, url, fecha, emoji };
-    marker.on('click', () => showFicha(marker.data));
+    const marker=L.marker([lat,lon],{icon});
+    marker.data={lat,lon,sci,nom,grupo,fam,seg,mun,amenazada,url,fecha,emoji:GRUPO_EMOJI[grupo]||'●'};
+    marker.on('click',e=>{L.DomEvent.stopPropagation(e);showFicha(marker.data)});
     ALL_MARKERS.push(marker);
     BIOD_CLUSTER.addLayer(marker);
   });
@@ -446,221 +403,164 @@ async function loadBIOD() {
   buildGrupoChips();
 }
 
-// ── LEYENDA RSC ────────────────────────────────────────
-function buildLeyenda(features) {
-  const sorted = [...features].sort((a,b) => b.properties.ha - a.properties.ha);
-  const list = document.getElementById('leyenda-list');
-  const grupoLabels = {
-    presion: '⚠ Presión antrópica',
-    suelo: '〰 Tipo de suelo',
-    conservar: '✦ Conservar',
-    manejar: '↻ Manejar',
-    investigar: '? Investigar'
-  };
-  let lastGrupo = null;
-  sorted.forEach(f => {
-    const p = f.properties;
-    if (p.grupo !== lastGrupo) {
-      lastGrupo = p.grupo;
-      const sep = document.createElement('div');
-      sep.style.cssText = 'font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#999;margin:10px 0 4px;padding:0 8px';
-      sep.textContent = grupoLabels[p.grupo] || p.grupo;
-      list.appendChild(sep);
-    }
-    const item = document.createElement('div');
-    item.className = 'leyenda-item';
-    item.innerHTML = `<div class="leyenda-dot" style="background:${p.color}"></div><span class="leyenda-name">${p.descrip}</span><span class="leyenda-ha">${p.ha} ha</span>`;
-    item.onclick = () => {
-      MAP.fitBounds(RSC_LAYER.getBounds());
-      switchTab('capas');
-    };
-    list.appendChild(item);
+function buildLeyenda(features){
+  const order=['conservar','manejar','investigar','suelo','presion'];
+  const grouped={};
+  features.forEach(f=>{
+    const g=f.properties.grupo;
+    if(!grouped[g]) grouped[g]=[];
+    grouped[g].push(f.properties);
+  });
+  const list=document.getElementById('leyenda-list');
+  order.forEach(grp=>{
+    if(!grouped[grp]) return;
+    const title=document.createElement('div');
+    title.className='leyenda-group-title';
+    title.textContent=GRUPO_NOMBRES_RSC[grp]||grp;
+    list.appendChild(title);
+    grouped[grp].sort((a,b)=>b.ha-a.ha).forEach(p=>{
+      const item=document.createElement('div');
+      item.className='leyenda-item';
+      item.innerHTML=`<div class="leyenda-dot" style="background:${p.color}"></div><span class="leyenda-name">${p.descrip}</span><span class="leyenda-ha">${p.ha} ha</span>`;
+      list.appendChild(item);
+    });
   });
 }
 
-// ── GRUPO CHIPS ────────────────────────────────────────
-function buildGrupoChips() {
-  const container = document.getElementById('grupo-chips');
-  const grupos = Object.keys(GRUPO_COLORS);
-  grupos.forEach(g => {
-    const chip = document.createElement('div');
-    chip.className = 'chip active';
-    chip.style.cssText = `border-color:${GRUPO_COLORS[g]}`;
-    chip.textContent = GRUPO_EMOJI[g] + ' ' + g;
-    chip.dataset.grupo = g;
-    chip.onclick = function() {
-      if (activeGrupos.has(g)) {
-        activeGrupos.delete(g);
-        this.classList.remove('active');
-        this.style.background = '';
-        this.style.color = '';
-      } else {
-        activeGrupos.add(g);
-        this.classList.add('active');
-        this.style.background = GRUPO_COLORS[g];
-        this.style.color = '#fff';
-      }
+function buildGrupoChips(){
+  const container=document.getElementById('grupo-chips');
+  Object.entries(GRUPO_COLORS).forEach(([g,color])=>{
+    const chip=document.createElement('div');
+    chip.className='chip';
+    chip.style.cssText=`background:${color};color:#fff;border-color:${color}`;
+    chip.textContent=(GRUPO_EMOJI[g]||'')+' '+g;
+    chip.dataset.grupo=g;
+    chip.onclick=function(){
+      if(activeGrupos.has(g)){activeGrupos.delete(g);this.style.background='#fff';this.style.color='#333';}
+      else{activeGrupos.add(g);this.style.background=color;this.style.color='#fff';}
       rebuildCluster();
     };
     container.appendChild(chip);
   });
 }
 
-// ── FILTROS ────────────────────────────────────────────
-function rebuildCluster() {
+function rebuildCluster(){
   BIOD_CLUSTER.clearLayers();
-  let visible = 0;
-  ALL_MARKERS.forEach(m => {
-    const d = m.data;
-    const grupoOk = activeGrupos.has(d.grupo);
-    const segOk = activeSeg === 'all' || d.seg === activeSeg;
-    const munOk = activeMun === 'all' || d.mun === activeMun;
-    const amOk = !onlyAmenazadas || d.amenazada;
-    if (grupoOk && segOk && munOk && amOk) {
-      BIOD_CLUSTER.addLayer(m);
-      visible++;
+  let vis=0; const sciSet=new Set();
+  ALL_MARKERS.forEach(m=>{
+    const d=m.data;
+    if(activeGrupos.has(d.grupo)&&(activeSeg==='all'||d.seg===activeSeg)&&(activeMun==='all'||d.mun===activeMun)&&(!onlyAm||d.amenazada)){
+      BIOD_CLUSTER.addLayer(m);vis++;sciSet.add(d.sci);
     }
   });
-  document.getElementById('stat-obs').textContent = visible.toLocaleString();
-  const sppSet = new Set(ALL_MARKERS.filter(m => {
-    const d = m.data;
-    return activeGrupos.has(d.grupo) &&
-      (activeSeg==='all'||d.seg===activeSeg) &&
-      (activeMun==='all'||d.mun===activeMun) &&
-      (!onlyAmenazadas||d.amenazada);
-  }).map(m => m.data.sci));
-  document.getElementById('stat-spp').textContent = sppSet.size.toLocaleString();
+  document.getElementById('stat-obs').textContent=vis.toLocaleString();
+  document.getElementById('stat-spp').textContent=sciSet.size.toLocaleString();
 }
 
-function filterSeg(el) {
-  document.querySelectorAll('[data-seg]').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
-  activeSeg = el.dataset.seg;
+function filterSeg(el){
+  document.querySelectorAll('[data-seg]').forEach(e=>{e.style.background='';e.style.color='';e.style.borderColor='';});
+  el.style.cssText='background:#1D9E75;color:#fff;border-color:#1D9E75';
+  activeSeg=el.dataset.seg;rebuildCluster();
+}
+function filterMun(el){
+  document.querySelectorAll('[data-mun]').forEach(e=>{e.style.background='';e.style.color='';e.style.borderColor='';});
+  el.style.cssText='background:#555;color:#fff;border-color:#555';
+  activeMun=el.dataset.mun;rebuildCluster();
+}
+function toggleAmenazadas(){
+  onlyAm=!onlyAm;
+  const btn=document.getElementById('btn-am');
+  btn.style.cssText=onlyAm?'background:#A32D2D;color:#fff;border-color:#A32D2D':'';
   rebuildCluster();
 }
-function filterMun(el) {
-  document.querySelectorAll('[data-mun]').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
-  activeMun = el.dataset.mun;
-  rebuildCluster();
-}
-function toggleAmenazadas() {
-  onlyAmenazadas = !onlyAmenazadas;
-  const btn = document.getElementById('toggle-amenazadas');
-  btn.classList.toggle('active', onlyAmenazadas);
-  if (onlyAmenazadas) { btn.style.background='#A32D2D'; btn.style.color='#fff'; btn.style.borderColor='#A32D2D'; }
-  else { btn.style.background=''; btn.style.color=''; btn.style.borderColor=''; }
-  rebuildCluster();
-}
-function toggleLayer(which) {
-  if (which === 'rsc') {
-    showRsc = !showRsc;
-    const btn = document.getElementById('toggle-rsc');
-    btn.classList.toggle('active', showRsc);
-    if (showRsc) { MAP.addLayer(RSC_LAYER); btn.style.background='var(--verde)'; btn.style.color='#fff'; }
-    else { MAP.removeLayer(RSC_LAYER); btn.style.background=''; btn.style.color=''; }
-  } else {
-    showBiod = !showBiod;
-    const btn = document.getElementById('toggle-biod');
-    btn.classList.toggle('active', showBiod);
-    if (showBiod) { MAP.addLayer(BIOD_CLUSTER); btn.style.background='var(--agua)'; btn.style.color='#fff'; }
-    else { MAP.removeLayer(BIOD_CLUSTER); btn.style.background=''; btn.style.color=''; }
+function toggleLayer(which){
+  if(which==='rsc'){
+    showRsc=!showRsc;
+    const btn=document.getElementById('btn-rsc');
+    if(showRsc){MAP.addLayer(RSC_LAYER);btn.style.cssText='background:#1D9E75;color:#fff;border-color:#1D9E75';}
+    else{MAP.removeLayer(RSC_LAYER);btn.style.cssText='';}
+  }else{
+    showBiod=!showBiod;
+    const btn=document.getElementById('btn-biod');
+    if(showBiod){MAP.addLayer(BIOD_CLUSTER);btn.style.cssText='background:#185FA5;color:#fff;border-color:#185FA5';}
+    else{MAP.removeLayer(BIOD_CLUSTER);btn.style.cssText='';}
   }
 }
 
-// ── FICHAS ────────────────────────────────────────────
-function showFicha(d) {
-  document.getElementById('ficha-grupo').textContent = d.emoji + ' ' + d.grupo + ' · ' + d.fam;
-  document.getElementById('ficha-nombre').textContent = d.nom;
-  document.getElementById('ficha-sci').textContent = d.sci;
-  const tags = [d.mun, d.seg, d.fecha ? d.fecha : ''].filter(Boolean);
-  const tagsHtml = tags.map(t => `<span class="ftag">${t}</span>`).join('') +
-    (d.amenazada ? '<span class="ftag amenazada-tag">⚠ Amenazada</span>' : '');
-  document.getElementById('ficha-tags').innerHTML = tagsHtml;
-  document.getElementById('ficha-link').href = d.url;
+function showFicha(d){
+  document.getElementById('ficha-grupo').textContent=(d.emoji||'')+' '+d.grupo+(d.fam?' · '+d.fam:'');
+  document.getElementById('ficha-nombre').textContent=d.nom;
+  document.getElementById('ficha-sci').textContent=d.sci;
+  document.getElementById('ficha-tags').innerHTML=
+    [d.mun,d.seg,d.fecha&&d.fecha!='undefined'?d.fecha:''].filter(Boolean).map(t=>`<span class="ftag">${t}</span>`).join('')+
+    (d.amenazada?'<span class="ftag am">⚠ Amenazada</span>':'');
+  document.getElementById('ficha-link').href=d.url;
   document.getElementById('ficha').classList.add('visible');
 }
-function closeFicha() { document.getElementById('ficha').classList.remove('visible'); }
+function closeFicha(){document.getElementById('ficha').classList.remove('visible')}
 
-const GRUPO_NOMBRES = {
-  presion: 'Presión antrópica', suelo: 'Tipo de suelo',
-  conservar: 'Conservar', manejar: 'Manejar', investigar: 'Investigar'
-};
-function showFichaRsc(p) {
-  document.getElementById('ficha-rsc-grupo').textContent = GRUPO_NOMBRES[p.grupo] || p.grupo;
-  document.getElementById('ficha-rsc-titulo').textContent = p.descrip;
-  document.getElementById('ficha-rsc-ha').textContent = p.ha.toLocaleString() + ' ha';
-  document.getElementById('ficha-rsc-int').textContent = p.intervencion || '—';
+function showFichaRsc(p){
+  document.getElementById('ficha-rsc-swatch').style.background=p.color;
+  document.getElementById('ficha-rsc-grupo').textContent=GRUPO_NOMBRES_RSC[p.grupo]||p.grupo;
+  document.getElementById('ficha-rsc-titulo').textContent=p.descrip;
+  document.getElementById('ficha-rsc-ha').textContent=p.ha.toLocaleString()+' ha';
+  document.getElementById('ficha-rsc-int').textContent=p.intervencion||'—';
   document.getElementById('ficha-rsc').classList.add('visible');
 }
-function closeFichaRsc() { document.getElementById('ficha-rsc').classList.remove('visible'); }
+function closeFichaRsc(){document.getElementById('ficha-rsc').classList.remove('visible')}
 
-// ── BÚSQUEDA ──────────────────────────────────────────
-function doSearch(q) {
-  const results = document.getElementById('search-results');
-  const empty = document.getElementById('search-empty');
-  results.innerHTML = '';
-  if (q.length < 2) { empty.style.display = 'none'; return; }
-  const lq = q.toLowerCase();
-  const hits = ALL_MARKERS.filter(m =>
-    m.data.nom.toLowerCase().includes(lq) || m.data.sci.toLowerCase().includes(lq)
-  ).slice(0, 30);
-  if (!hits.length) { empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  hits.forEach(m => {
-    const d = m.data;
-    const div = document.createElement('div');
-    div.className = 'search-item';
-    div.innerHTML = `
-      <div>${d.emoji} <strong>${d.nom}</strong></div>
+function doSearch(q){
+  const res=document.getElementById('search-results');
+  const emp=document.getElementById('search-empty');
+  res.innerHTML='';
+  if(q.length<2){emp.style.display='none';return;}
+  const lq=q.toLowerCase();
+  const hits=ALL_MARKERS.filter(m=>m.data.nom.toLowerCase().includes(lq)||m.data.sci.toLowerCase().includes(lq)).slice(0,30);
+  if(!hits.length){emp.style.display='block';return;}
+  emp.style.display='none';
+  hits.forEach(m=>{
+    const d=m.data;
+    const div=document.createElement('div');
+    div.className='search-item';
+    div.innerHTML=`<div>${d.emoji||''} <strong>${d.nom}</strong></div>
       <div class="search-sci">${d.sci}</div>
       <div class="search-meta">
-        <span class="stag">${d.grupo}</span>
-        <span class="stag">${d.mun}</span>
-        ${d.amenazada ? '<span class="stag amenazada">⚠ Amenazada</span>' : ''}
+        <span class="stag">${d.grupo}</span><span class="stag">${d.mun}</span>
+        ${d.amenazada?'<span class="stag am">⚠ Amenazada</span>':''}
       </div>`;
-    div.onclick = () => {
-      MAP.setView([d.lat, d.lon], 17);
-      m.openPopup && m.openPopup();
-      showFicha(d);
-    };
-    results.appendChild(div);
+    div.onclick=()=>{MAP.setView([d.lat,d.lon],17);showFicha(d);};
+    res.appendChild(div);
   });
 }
 
-// ── PANEL ─────────────────────────────────────────────
-function switchTab(name) {
-  document.querySelectorAll('.ptab').forEach((t,i) => {
-    const names = ['capas','leyenda','buscar'];
-    t.classList.toggle('active', names[i] === name);
+function switchTab(name){
+  ['capas','leyenda','buscar'].forEach((n,i)=>{
+    document.querySelectorAll('.ptab')[i].classList.toggle('active',n===name);
+    document.getElementById('tab-'+n).classList.toggle('active',n===name);
   });
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+}
+function togglePanel(){
+  panelOpen=!panelOpen;
+  document.getElementById('panel').classList.toggle('collapsed',!panelOpen);
+  const btn=document.getElementById('panel-toggle');
+  btn.textContent=panelOpen?'◀ Panel':'▶ Panel';
+  btn.style.left=panelOpen?'300px':'0';
 }
 
-function togglePanel() {
-  panelOpen = !panelOpen;
-  document.getElementById('panel').classList.toggle('collapsed', !panelOpen);
-  const btn = document.getElementById('panel-toggle');
-  btn.textContent = panelOpen ? '◀ Panel' : '▶ Panel';
-  btn.style.left = panelOpen ? '300px' : '0';
-}
-
-// ── BOOT ──────────────────────────────────────────────
-async function boot() {
+async function boot(){
   initMap();
   await loadRSC();
   await loadBIOD();
-  setProgress(100, '¡Listo!');
-  setTimeout(() => {
-    const loading = document.getElementById('loading');
-    loading.classList.add('hidden');
-    setTimeout(() => loading.remove(), 500);
-  }, 400);
-  MAP.fitBounds(RSC_LAYER.getBounds(), { padding: [20, 20] });
+  setProgress(100,'¡Listo!');
+  setTimeout(()=>{
+    const el=document.getElementById('loading');
+    el.classList.add('out');
+    setTimeout(()=>el.remove(),500);
+  },350);
+  MAP.fitBounds(RSC_LAYER.getBounds(),{padding:[20,20]});
 }
-boot().catch(e => {
-  document.getElementById('loading-msg').textContent = 'Error al cargar datos. Verifica la consola.';
+boot().catch(e=>{
+  document.getElementById('loading-msg').textContent='Error al cargar datos.';
   console.error(e);
 });
 </script>
